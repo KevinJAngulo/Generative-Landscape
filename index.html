@@ -1,32 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simple Step Counter</title>
+    <meta charset="UTF-8">
+    <title>Dynamic 3D Landscape</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
 </head>
 <body>
-  <h1>Simple Step Counter</h1>
-  <p>Steps: <span id="step-count">0</span></p>
-
-  <script>
-    let stepCount = 0;
-    let lastValue;
-
-    window.addEventListener('devicemotion', (event) => {
-      const acceleration = event.acceleration;
-
-      if (acceleration && acceleration.x !== null) {
-        const deltaX = Math.abs(acceleration.x - lastValue);
-
-        if (deltaX > 5) {
-          stepCount++;
-          document.getElementById('step-count').innerHTML = stepCount;
-        }
-
-        lastValue = acceleration.x;
-      }
-    });
-  </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
