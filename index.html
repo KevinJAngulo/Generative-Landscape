@@ -1,45 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>3D Mountains</title>
-    <style>
-        body { margin: 0; }
-        canvas { width: 100%; height: 100% }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Step Counter</title>
 </head>
 <body>
-<script src="https://cdn.jsdelivr.net/npm/three@0.130.1/build/three.min.js"></script>
-<script>
-    var scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  <h1>Simple Step Counter</h1>
+  <p>Steps: <span id="step-count">0</span></p>
 
-    var renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+  <script>
+    let stepCount = 0;
+    let lastValue;
 
-    // Mountain geometry
-    var geometry = new THREE.PlaneGeometry(100, 100, 100, 100);
-    var material = new THREE.MeshStandardMaterial({
-        color: 0x00ff00,
-        wireframe: true
+    window.addEventListener('devicemotion', (event) => {
+      const acceleration = event.acceleration;
+
+      if (acceleration && acceleration.x !== null) {
+        const deltaX = Math.abs(acceleration.x - lastValue);
+
+        if (deltaX > 5) {
+          stepCount++;
+          document.getElementById('step-count').innerHTML = stepCount;
+        }
+
+        lastValue = acceleration.x;
+      }
     });
-
-    var plane = new THREE.Mesh(geometry, material);
-    plane.rotation.x = -Math.PI / 2; // Rotate to lay flat
-    scene.add(plane);
-
-    camera.position.z = 50;
-
-    // Lighting
-    var light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(0, 1, 1).normalize();
-    scene.add(light);
-
-    function animate() {
-        requestAnimationFrame(animate);
-        renderer.render(scene, camera);
-    }
-    animate();
-</script>
+  </script>
 </body>
 </html>
