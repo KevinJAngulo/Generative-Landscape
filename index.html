@@ -1,45 +1,56 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>3D Mountains</title>
-    <style>
-        body { margin: 0; }
-        canvas { width: 100%; height: 100% }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sweatcoin App Background</title>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-rows: repeat(6, 1fr);
+      gap: 10px;
+    }
+    .grid-item {
+      background-color: transparent;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    @media (orientation: portrait) {
+      .grid-container {
+        width: 100vw;
+        height: 100vh;
+        background-image: url(portrait-bg.jpg);
+        background-size: cover;
+      }
+    }
+    @media (orientation: landscape) {
+      .grid-container {
+        width: 100%;
+        height: 100%;
+        background-image: url(landscape-bg.jpg);
+        background-size: cover;
+      }
+    }
+  </style>
 </head>
 <body>
-<script src="https://cdn.jsdelivr.net/npm/three@0.130.1/build/three.min.js"></script>
-<script>
-    var scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-
-    var renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
-
-    // Mountain geometry
-    var geometry = new THREE.PlaneGeometry(100, 100, 100, 100);
-    var material = new THREE.MeshStandardMaterial({
-        color: 0x00ff00,
-        wireframe: true
-    });
-
-    var plane = new THREE.Mesh(geometry, material);
-    plane.rotation.x = -Math.PI / 2; // Rotate to lay flat
-    scene.add(plane);
-
-    camera.position.z = 50;
-
-    // Lighting
-    var light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(0, 1, 1).normalize();
-    scene.add(light);
-
-    function animate() {
-        requestAnimationFrame(animate);
-        renderer.render(scene, camera);
-    }
-    animate();
-</script>
+  <div class="grid-container">
+    <div class="grid-item"></div>
+    <div class="grid-item"></div>
+    <div class="grid-item"></div>
+    <div class="grid-item"></div>
+    <div class="grid-item"></div>
+    <div class="grid-item"></div>
+    <div class="grid-item"></div>
+    <!-- Repeat the grid-item elements for the desired grid layout -->
+  </div>
 </body>
 </html>
