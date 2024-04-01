@@ -1,16 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic 3D Landscape</title>
-    <style>
-        body { margin: 0; }
-        canvas { display: block; }
-    </style>
+<meta charset="UTF-8">
+<title>Generative Art with p5.js</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
 </head>
 <body>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="script.js"></script>
+<script>
+// p5.js code starts here
+let curlSpan = 0;
+let colors = "f24-0081a7-00afb9-fdfcdc-fed9b7-f07167-aa1155-880044-dd1155-ffee88-00cc99-fff-1c91ff-fb3640-605f5e-247ba0-e2e2e2".split("-").map(a=>"#"+a);
+
+class Particle {
+    constructor(args) {
+        let def = {
+            p: createVector(0, 0),
+            v: createVector(0, 0),
+            a: createVector(0, 0),
+            r: random(1, 1.5),
+            rFac: random(0.994, 0.995),
+            copySpan: int(random(20, 90)),
+            z: 0,
+            color: random(colors),
+            randomId: random(1000000),
+            alive: true
+        }
+        Object.assign(def, args);
+        Object.assign(this, def);
+    }
+
+    update() {
+        this.lastP = this.p.copy();
+        this.p.add(this.v);
+        this.v.add(this.a);
+
+        if (frameCount % this.copySpan == 0 && this.r > 0.5 && random() < 0.6 && this.z < 5) {
+            particles.push(new Particle({
+                p: this.p.copy(),
+                v: this.v.copy().rotate(-0.1),
+                r: this.r,
+                z: this.z + 1,
+                color: this.color
+            }));
+            particles.push(new Particle({
+                p: this.p.copy(),
+                v: this.v.copy().rotate(0.1),
+                r: this.r,
+                z: this.z + 1,
+                color: this.color
+            }));
+            this.alive = false;
+        }
+
+        this.v.x += sin(this.p.x / 20 + this.p.x / curlSpan) / 10 / (this.r + 0.1) / 2;
+        this.v.y += cos(this.p.y / 10 + this.p.x / 80) / 10 / (this.r + 0.1) / 2;
+
+        this.v.y += sin(this.p.x / 20 + this.p.x / curlSpan) / -10 / (this.r + 0.1) / 40;
+        this.v.x += cos(this.p.y / 10 + this.p.x / 5) / -10 / (this.r + 0.1) / 40;
+        this.r *= this.rFac;
+        this.v.mult(0.995);
+
+        this.v.rotate(sin(frameCount / 10 + this.p.x / 50 + this.p.y / 10) / (this.r * this.r + 0.01) / 500);
+    }
+
+    draw() {
+        push();
+        stroke(this.color);
+        noFill();
+        strokeWeight(this.r * random(0.8, 1.6));
+
+        line(this.lastP.x, this.lastP.y, this.p.x, this.p.y);
+        pop();
+    }    
+}
+
+let particles = [];
+let cnv;
+
+function setup() {
+    pixelDensity(3);
+    cnv = createCanvas(1200, 1200);
+    background(100);
+
+    fill(0);
+    rect(0, 0, width, height);
+    curlSpan = random(50, 100);
+
+    let count = 200;
+    for (let i = 0; i < count; i++) {
+        particles.push(new Particle({
+            p: createVector(width / 2, height / 2).add(createVector(-5, 5)),
+            v: createVector(0, 3.5).rotate(i / count * PI * 2)
+        }));
+    }
+}
+
+function draw() {
+    particles = particles.filter(p => p.alive);
+    particles.forEach(obj => {
+        obj.update();
+        obj.draw();
+    });
+}
+
+function keyPressed() {
+    if (key == ' ') {
+        save("240211_Inner_demons.jpg");
+    }
+}
+// p5.js code ends here
+</script>
 </body>
 </html>
