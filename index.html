@@ -114,6 +114,28 @@ function mousePressed() {
     }
 }
 
+function mouseDragged() {
+  // Get the previous mouse position
+  let previousMouseX = pmouseX;
+  let previousMouseY = pmouseY;
+
+  // Get the current mouse position
+  let mouseX = this.mouseX;
+  let mouseY = this.mouseY;
+
+  // Draw a line between the previous mouse position and the current mouse position
+  stroke(random(colors));
+  strokeWeight(10);
+  line(previousMouseX, previousMouseY, mouseX, mouseY);
+
+  // Set the blend mode to ADD
+  blendMode(ADD);
+
+ 
+  // Blur the canvas
+  filter(BLUR, 3);
+}
+
 function keyPressed() {
     if (key == ' ') {
         save("240211_Inner_demons.jpg");
