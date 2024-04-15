@@ -103,6 +103,17 @@ function draw() {
     });
 }
 
+function mousePressed() {
+    let newParticleCount = 50; // Less than the initial count for a smaller effect
+    let newParticleRadius = 2.8; // Smaller velocity magnitude for a smaller effect
+    for (let i = 0; i < newParticleCount; i++) {
+        particles.push(new Particle({
+            p: createVector(mouseX, mouseY),
+            v: createVector(0, newParticleRadius).rotate(i / newParticleCount * PI * 2)
+        }));
+    }
+}
+
 function keyPressed() {
     if (key == ' ') {
         save("240211_Inner_demons.jpg");
