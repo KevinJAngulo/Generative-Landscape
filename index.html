@@ -104,7 +104,7 @@ function draw() {
 }
 
 function mousePressed() {
-    let newParticleCount = 50; // Less than the initial count for a smaller effect
+    let newParticleCount = 100; // Less than the initial count for a smaller effect
     let newParticleRadius = 2.8; // Smaller velocity magnitude for a smaller effect
     for (let i = 0; i < newParticleCount; i++) {
         particles.push(new Particle({
@@ -119,7 +119,6 @@ function keyPressed() {
         save("240211_Inner_demons.jpg");
     }
 }
-// p5.js code ends here
 </script>
 </body>
 </html>
