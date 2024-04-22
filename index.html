@@ -75,7 +75,7 @@
         let count = 300;
         for (let i = 0; i < count; i++) {
             particles.push(new Particle({
-                p: createVector(width / 2, height / 2).add(p5.Vector.random2D().mult(100)),
+                p: createVector(width / 2, height / 2).add(p5.Vector.random2D().mult(150)),
                 v: p5.Vector.random2D().mult(3)
             }));
         }
@@ -100,7 +100,7 @@
                 particles.push(new Particle({
                     p: createVector(mouseX, mouseY),
                     v: p5.Vector.random2D().mult(random(1, 5)),
-                    color: color(random(255), random(255), random(255)),
+                    color: random(colors),
                     r: random(1, 2)
                 }));
             }
@@ -108,7 +108,7 @@
     }
     
     function keyPressed() {
-        if (key == ' ') {
+        if (key == 's') {
             save("Chaos.jpg");
         }
     }
