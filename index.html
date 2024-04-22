@@ -24,7 +24,8 @@
                 lifespan: random(200, 600), // Lifespan range from 200 to 600 frames
                 copySpan: int(random(10, 100)),
                 z: 0,
-                color: color(random(255), random(255), random(255)),
+                color: random(colors),
+                
                 alive: true
             }
             Object.assign(def, args);
@@ -100,7 +101,7 @@
                 particles.push(new Particle({
                     p: createVector(mouseX, mouseY),
                     v: p5.Vector.random2D().mult(random(1, 5)),
-                    color: random(colors),
+                    color: color(random(255), random(255), random(255)),
                     r: random(1, 2)
                 }));
             }
