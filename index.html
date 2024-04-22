@@ -7,148 +7,112 @@
 </head>
 <body>
 <script>
-// p5.js code starts here
-let curlSpan = 0;
-let colors = "f24-0081a7-00afb9-fdfcdc-fed9b7-f07167-aa1155-880044-dd1155-ffee88-00cc99-fff-1c91ff-fb3640-605f5e-247ba0-e2e2e2".split("-").map(a=>"#"+a);
-
-class Particle {
-    constructor(args) {
-        let def = {
-            p: createVector(0, 0),
-            v: createVector(0, 0),
-            a: createVector(0, 0),
-            r: random(1, 1.5),
-            rFac: random(0.994, 0.995),
-            copySpan: int(random(20, 90)),
-            z: 0,
-            color: random(colors),
-            randomId: random(1000000),
-            alive: true
+    let curlSpan = 0;
+    let colors = "f24-0081a7-00afb9-fdfcdc-fed9b7-f07167-aa1155-880044-dd1155-ffee88-00cc99-fff-1c91ff-fb3640-605f5e-247ba0-e2e2e2".split("-").map(a => "#" + a);
+    let stoppingFrame = 1200;  // Set a frame after which all particles will stop moving
+    let frameCounter = 0; // Frame counter to manage the stopping process
+    let isStopped = false;  // Flag to indicate all particles have been stopped
+    
+    class Particle {
+        constructor(args) {
+            let def = {
+                p: createVector(0, 0),
+                v: createVector(0, 0),
+                a: createVector(0, 0),
+                r: random(1, 3),
+                rFac: random(0.99, 0.999),
+                lifespan: random(200, 600), // Lifespan range from 200 to 600 frames
+                copySpan: int(random(10, 100)),
+                z: 0,
+                color: color(random(255), random(255), random(255)),
+                alive: true
+            }
+            Object.assign(def, args);
+            Object.assign(this, def);
         }
-        Object.assign(def, args);
-        Object.assign(this, def);
-    }
-
-    update() {
-        this.lastP = this.p.copy();
-        this.p.add(this.v);
-        this.v.add(this.a);
-
-        if (frameCount % this.copySpan == 0 && this.r > 0.5 && random() < 0.6 && this.z < 5) {
-            particles.push(new Particle({
-                p: this.p.copy(),
-                v: this.v.copy().rotate(-0.1),
-                r: this.r,
-                z: this.z + 1,
-                color: this.color
-            }));
-            particles.push(new Particle({
-                p: this.p.copy(),
-                v: this.v.copy().rotate(0.1),
-                r: this.r,
-                z: this.z + 1,
-                color: this.color
-            }));
-            this.alive = false;
+    
+        update() {
+            if (frameCounter >= stoppingFrame || isStopped) {
+                this.v.set(0, 0);  // Stop the particle's movement
+                this.a.set(0, 0);  // Remove any acceleration
+                this.alive = (this.r > 0.1);  // Keep alive if radius is significant
+            } else {
+                this.lifespan--;
+                if (this.lifespan <= 0) {
+                    this.v.set(0, 0);
+                    this.a.set(0, 0);
+                } else {
+                    this.lastP = this.p.copy();
+                    this.p.add(this.v);
+                    this.v.add(this.a);
+                    this.a.add(p5.Vector.random2D().mult(0.05));
+                    this.v.rotate(noise(this.p.x, this.p.y, frameCount / 100) - 0.5);
+                    this.r *= this.rFac;
+                    this.v.mult(0.99);
+                }
+            }
         }
-
-        this.v.x += sin(this.p.x / 20 + this.p.x / curlSpan) / 10 / (this.r + 0.1) / 2;
-        this.v.y += cos(this.p.y / 10 + this.p.x / 80) / 10 / (this.r + 0.1) / 2;
-
-        this.v.y += sin(this.p.x / 20 + this.p.x / curlSpan) / -10 / (this.r + 0.1) / 40;
-        this.v.x += cos(this.p.y / 10 + this.p.x / 5) / -10 / (this.r + 0.1) / 40;
-        this.r *= this.rFac;
-        this.v.mult(0.995);
-
-        this.v.rotate(sin(frameCount / 10 + this.p.x / 50 + this.p.y / 10) / (this.r * this.r + 0.01) / 500);
+    
+        draw() {
+            push();
+            stroke(this.color);
+            strokeWeight(this.r);
+            line(this.lastP.x, this.lastP.y, this.p.x, this.p.y);
+            pop();
+        }    
     }
-
-    draw() {
-        push();
-        stroke(this.color);
-        noFill();
-        strokeWeight(this.r * random(0.8, 1.6));
-
-        line(this.lastP.x, this.lastP.y, this.p.x, this.p.y);
-        pop();
-    }    
-}
-
-let particles = [];
-let cnv;
-
-function setup() {
-    pixelDensity(3);
-    cnv = createCanvas(1200, 1200);
-    background(100);
-
-    fill(0);
-    rect(0, 0, width, height);
-    curlSpan = random(50, 100);
-
-    let count = 200;
-    for (let i = 0; i < count; i++) {
-        particles.push(new Particle({
-            p: createVector(width / 2, height / 2).add(createVector(-5, 5)),
-            v: createVector(0, 3.5).rotate(i / count * PI * 2)
-        }));
+    
+    let particles = [];
+    let cnv;
+    
+    function setup() {
+        pixelDensity(3);
+        cnv = createCanvas(1200, 1200);
+        background(0);
+    
+        curlSpan = random(50, 200);
+    
+        let count = 300;
+        for (let i = 0; i < count; i++) {
+            particles.push(new Particle({
+                p: createVector(width / 2, height / 2).add(p5.Vector.random2D().mult(100)),
+                v: p5.Vector.random2D().mult(3)
+            }));
+        }
     }
-}
-
-function draw() {
-    particles = particles.filter(p => p.alive);
-    particles.forEach(obj => {
-        obj.update();
-        obj.draw();
-    });
-}
-
-function mousePressed() {
-    let newParticleCount = 100; // Less than the initial count for a smaller effect
-    let newParticleRadius = 2.8; // Smaller velocity magnitude for a smaller effect
-    for (let i = 0; i < newParticleCount; i++) {
-        particles.push(new Particle({
-            p: createVector(mouseX, mouseY),
-            v: createVector(0, newParticleRadius).rotate(i / newParticleCount * PI * 2)
-        }));
+    
+    function draw() {
+        if (frameCounter++ == stoppingFrame) {
+            isStopped = true;  // Set the stop flag at the designated frame
+        }
+        blendMode(ADD);
+        background(0, 0, 0, 25);
+        particles = particles.filter(p => p.alive);  // Remove dead particles
+        particles.forEach(obj => {
+            obj.update();
+            obj.draw();
+        });
     }
-}
-
-function mouseDragged() {
-  // Get the previous mouse position
-  let previousMouseX = pmouseX;
-  let previousMouseY = pmouseY;
-
-  // Get the current mouse position
-  let mouseX = this.mouseX;
-  let mouseY = this.mouseY;
-
-  // Draw a line between the previous mouse position and the current mouse position
-  stroke(random(colors));
-  strokeWeight(10);
-  line(previousMouseX, previousMouseY, mouseX, mouseY);
-
-  // Set the blend mode to ADD
-  blendMode(ADD);
-
-}
-
-function mouseReleased() {
-    let newParticleCount = 50; // Less than the initial count for a smaller effect
-    let newParticleRadius = 2.8; // Smaller velocity magnitude for a smaller effect
-    for (let i = 0; i < newParticleCount; i++) {
-        particles.push(new Particle({
-            p: createVector(mouseX, mouseY),
-            v: createVector(0, newParticleRadius).rotate(i / newParticleCount * PI * 2)
-        }));
+    
+    function mousePressed() {
+        if (!isStopped) {  // Allow new particles only if not stopped
+            for (let i = 0; i < 100; i++) {
+                particles.push(new Particle({
+                    p: createVector(mouseX, mouseY),
+                    v: p5.Vector.random2D().mult(random(1, 5)),
+                    color: color(random(255), random(255), random(255)),
+                    r: random(1, 2)
+                }));
+            }
+        }
     }
-}
-
-function keyPressed() {
-    if (key == ' ') {
-        save("240211_Inner_demons.jpg");
+    
+    function keyPressed() {
+        if (key == ' ') {
+            save("Chaos.jpg");
+        }
     }
-}
+    
 </script>
 </body>
 </html>
